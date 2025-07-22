@@ -66,11 +66,22 @@ async function runWebClient(args: Args): Promise<void> {
     abort.abort();
   });
 
+  console.log("runWebClient with args:", args);
+
   try {
-    await spawnPromise("node", [inspectorClientPath], {
-      signal: abort.signal,
-      echoOutput: true,
-    });
+    await spawnPromise(
+      "node",
+      [
+        inspectorClientPath,
+        ...Object.values(args.envArgs),
+        args.command,
+        ...args.args,
+      ],
+      {
+        signal: abort.signal,
+        echoOutput: true,
+      },
+    );
   } catch (e) {
     if (!cancelled || process.env.DEBUG) throw e;
   }
